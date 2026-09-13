@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 // 콘텐츠(영화/시리즈) CRUD API
-// 지금은 로그인만 하면 누구나 호출 가능하고, 관리자만 가능하도록 막는 건 다음 이슈(#4)에서 처리한다
+// 등록/수정/삭제는 SecurityConfig에서 ADMIN 권한만 가능하도록 제한되어 있다 (조회는 로그인한 누구나 가능)
 @RestController
 @RequestMapping("/api/contents")
 public class ContentController {
