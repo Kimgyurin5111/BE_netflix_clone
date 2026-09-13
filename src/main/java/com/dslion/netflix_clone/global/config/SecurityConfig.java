@@ -43,7 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // Swagger UI 문서 페이지도 로그인 없이 접근 가능
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // 관리자 전용 API (콘텐츠 등록 등, 이후 이슈에서 채울 예정)
+                        // 관리자 전용 API (콘텐츠 등록 등, 이후 채울 예정)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 그 외 요청은 로그인(토큰)이 있어야 접근 가능
                         .anyRequest().authenticated()
