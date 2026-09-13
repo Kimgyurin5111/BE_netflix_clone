@@ -6,6 +6,7 @@ import com.dslion.netflix_clone.auth.userdetails.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -43,7 +44,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // Swagger UI 문서 페이지도 로그인 없이 접근 가능
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        // 관리자 전용 API (콘텐츠 등록 등, 이후 채울 예정)
+                        // 콘텐츠 등록/수정/삭제는 관리자만 가능, 조회(GET)는 로그인한 누구나 가능
+                        // "/api/contents"(정확히 이 경로)와 "/api/contents/**"(뒤에 id가 붙는 경로)를 둘 다 걸어야
+                        // 등록(POST /api/contents)까지 빠짐없이 막힌다
+                        .requestMatchers(HttpMethod.POST, "/api/contents", "/api/contents/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/contents", "/api/contents/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/contents", "/api/contents/**").hasRole("ADMIN")
+                        // 그 외 관리자 전용 API가 생기면 여기로
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 그 외 요청은 로그인(토큰)이 있어야 접근 가능
                         .anyRequest().authenticated()
