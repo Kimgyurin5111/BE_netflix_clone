@@ -10,3 +10,6 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+jwt:
+  secret: "여기에 32자 이상의 랜덤 문자열을 넣으세요 (예: openssl rand -base64 64)"

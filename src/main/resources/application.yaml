@@ -12,3 +12,6 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
+
+jwt:
+  access-token-expiration-ms: 3600000 # 1시간
