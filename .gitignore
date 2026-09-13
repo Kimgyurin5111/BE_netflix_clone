@@ -41,3 +41,6 @@ out/
 
 ### local secrets ###
 application-local.yaml
+
+### local docs (not committed) ###
+docs/
