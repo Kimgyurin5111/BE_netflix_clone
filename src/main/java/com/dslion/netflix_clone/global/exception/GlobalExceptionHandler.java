@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 // 컨트롤러에서 발생한 예외를 한 곳에서 잡아서 에러 메시지로 응답해주는 클래스
+// (정식 전역 예외 처리는 5주차에서 더 다듬을 예정, 지금은 최소한으로만)
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -28,7 +29,19 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
-    // @Valid 검증 실패 (제목이 비어있다 등) -> 400 Bad Request
+    // 이미 있는 장르 이름 -> 409 Conflict
+    @ExceptionHandler(DuplicateGenreNameException.class)
+    public ResponseEntity<String> handleDuplicateGenreName(DuplicateGenreNameException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    // 존재하지 않는 장르 -> 404 Not Found
+    @ExceptionHandler(GenreNotFoundException.class)
+    public ResponseEntity<String> handleGenreNotFound(GenreNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    // @Valid 검증 실패 (제목/이름이 비어있다 등) -> 400 Bad Request
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldError().getDefaultMessage();

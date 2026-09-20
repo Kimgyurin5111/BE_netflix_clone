@@ -50,6 +50,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/contents", "/api/contents/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/contents", "/api/contents/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/contents", "/api/contents/**").hasRole("ADMIN")
+                        // 장르 등록도 관리자만 가능, 조회(GET)는 로그인한 누구나 가능
+                        // 위와 마찬가지로 "/api/genres"(정확히 이 경로)까지 같이 걸어야 등록이 빠짐없이 막힌다
+                        .requestMatchers(HttpMethod.POST, "/api/genres", "/api/genres/**").hasRole("ADMIN")
                         // 그 외 관리자 전용 API가 생기면 여기로
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 그 외 요청은 로그인(토큰)이 있어야 접근 가능
