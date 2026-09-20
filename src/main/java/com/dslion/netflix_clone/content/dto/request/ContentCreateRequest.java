@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 // 콘텐츠 등록 요청
 @Getter
 @Setter
@@ -24,4 +26,7 @@ public class ContentCreateRequest {
     private String posterImageUrl;
 
     private Integer runningTime;
+
+    // 이 콘텐츠에 연결할 장르 id 목록 (없으면 장르 없이 등록됨)
+    private List<Long> genreIds;
 }

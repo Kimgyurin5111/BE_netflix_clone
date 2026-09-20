@@ -5,11 +5,16 @@ import com.dslion.netflix_clone.content.dto.request.ContentUpdateRequest;
 import com.dslion.netflix_clone.content.dto.response.ContentResponse;
 import com.dslion.netflix_clone.content.entity.Content;
 import com.dslion.netflix_clone.content.repository.ContentRepository;
+import com.dslion.netflix_clone.genre.entity.Genre;
+import com.dslion.netflix_clone.genre.repository.GenreRepository;
 import com.dslion.netflix_clone.global.exception.ContentNotFoundException;
+import com.dslion.netflix_clone.global.exception.GenreNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 // 콘텐츠 등록/수정/삭제/조회의 실제 처리 로직
 @Service
@@ -17,6 +22,9 @@ public class ContentService {
 
     @Autowired
     private ContentRepository contentRepository;
+
+    @Autowired
+    private GenreRepository genreRepository;
 
     // 콘텐츠 등록 (userId = 로그인한 사람의 id, createdBy로 저장)
     public ContentResponse create(ContentCreateRequest request, Long userId) {
@@ -29,6 +37,10 @@ public class ContentService {
                 request.getRunningTime(),
                 userId
         );
+
+        if (request.getGenreIds() != null) {
+            content.setGenres(resolveGenres(request.getGenreIds()));
+        }
 
         Content saved = contentRepository.save(content);
         return ContentResponse.from(saved);
@@ -71,6 +83,9 @@ public class ContentService {
         if (request.getRunningTime() != null) {
             content.setRunningTime(request.getRunningTime());
         }
+        if (request.getGenreIds() != null) {
+            content.setGenres(resolveGenres(request.getGenreIds()));
+        }
 
         Content saved = contentRepository.save(content);
         return ContentResponse.from(saved);
@@ -85,5 +100,16 @@ public class ContentService {
     private Content findContentOrThrow(Long id) {
         return contentRepository.findById(id)
                 .orElseThrow(ContentNotFoundException::new);
+    }
+
+    // genreId 목록을 실제 Genre 엔티티 목록으로 변환 (하나라도 없는 id면 예외)
+    private Set<Genre> resolveGenres(List<Long> genreIds) {
+        Set<Genre> genres = new HashSet<>();
+        for (Long genreId : genreIds) {
+            Genre genre = genreRepository.findById(genreId)
+                    .orElseThrow(GenreNotFoundException::new);
+            genres.add(genre);
+        }
+        return genres;
     }
 }
