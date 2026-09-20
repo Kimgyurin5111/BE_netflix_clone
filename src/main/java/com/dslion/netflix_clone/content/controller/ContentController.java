@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,6 +51,12 @@ public class ContentController {
     @GetMapping("/{id}")
     public ResponseEntity<ContentResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(contentService.findById(id));
+    }
+
+    // 콘텐츠 제목 검색 (예: /api/contents/search?keyword=범죄)
+    @GetMapping("/search")
+    public ResponseEntity<List<ContentResponse>> search(@RequestParam String keyword) {
+        return ResponseEntity.ok(contentService.search(keyword));
     }
 
     // 콘텐츠 수정

@@ -60,6 +60,14 @@ public class ContentService {
         return ContentResponse.from(content);
     }
 
+    // 제목으로 콘텐츠 검색
+    public List<ContentResponse> search(String keyword) {
+        List<Content> contents = contentRepository.findByTitleContainingIgnoreCase(keyword);
+        return contents.stream()
+                .map(ContentResponse::from)
+                .toList();
+    }
+
     // 콘텐츠 수정
     // 요청에 값이 들어있는 항목만 바꾸고, null인 항목은 기존 값을 그대로 둔다
     public ContentResponse update(Long id, ContentUpdateRequest request) {
