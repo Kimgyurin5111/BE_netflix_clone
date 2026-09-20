@@ -10,6 +10,8 @@ import com.dslion.netflix_clone.genre.repository.GenreRepository;
 import com.dslion.netflix_clone.global.exception.ContentNotFoundException;
 import com.dslion.netflix_clone.global.exception.GenreNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -46,12 +48,11 @@ public class ContentService {
         return ContentResponse.from(saved);
     }
 
-    // 콘텐츠 목록 조회
-    public List<ContentResponse> findAll() {
-        List<Content> contents = contentRepository.findAll();
-        return contents.stream()
-                .map(ContentResponse::from)
-                .toList();
+    // 콘텐츠 목록 조회 (페이징 + 정렬)
+    // pageable 안에 페이지 번호, 페이지 크기, 정렬 기준이 다 들어있다 (컨트롤러에서 쿼리 파라미터로 받아서 넘겨줌)
+    public Page<ContentResponse> findAll(Pageable pageable) {
+        Page<Content> contents = contentRepository.findAll(pageable);
+        return contents.map(ContentResponse::from);
     }
 
     // 콘텐츠 단건 조회 (수정 화면 들어가기 전에 이 API로 기존 값을 먼저 불러오면 된다)

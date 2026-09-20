@@ -7,6 +7,9 @@ import com.dslion.netflix_clone.content.dto.response.ContentResponse;
 import com.dslion.netflix_clone.content.service.ContentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,10 +44,14 @@ public class ContentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // 콘텐츠 목록 조회
+    // 콘텐츠 목록 조회 (페이징 + 정렬)
+    // 예: /api/contents?page=0&size=10&sort=releaseYear,desc
+    // page, size, sort를 아무것도 안 넘기면 0페이지 / 10개씩 / 정렬 없음으로 조회됨
     @GetMapping
-    public ResponseEntity<List<ContentResponse>> findAll() {
-        return ResponseEntity.ok(contentService.findAll());
+    public ResponseEntity<Page<ContentResponse>> findAll(
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+        return ResponseEntity.ok(contentService.findAll(pageable));
     }
 
     // 콘텐츠 단건 조회
