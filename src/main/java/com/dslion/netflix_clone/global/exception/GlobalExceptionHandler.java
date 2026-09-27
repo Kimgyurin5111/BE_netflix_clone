@@ -41,6 +41,24 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
+    // 이미 마이리스트에 있는 콘텐츠 -> 409 Conflict
+    @ExceptionHandler(DuplicateMyListException.class)
+    public ResponseEntity<String> handleDuplicateMyList(DuplicateMyListException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    }
+
+    // 마이리스트에 없는 콘텐츠 -> 404 Not Found
+    @ExceptionHandler(MyListNotFoundException.class)
+    public ResponseEntity<String> handleMyListNotFound(MyListNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    // 잘못된 이미지 파일 (비어있음, 저장 실패 등) -> 400 Bad Request
+    @ExceptionHandler(InvalidImageFileException.class)
+    public ResponseEntity<String> handleInvalidImageFile(InvalidImageFileException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
     // @Valid 검증 실패 (제목/이름이 비어있다 등) -> 400 Bad Request
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> handleValidation(MethodArgumentNotValidException e) {

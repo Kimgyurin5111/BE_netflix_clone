@@ -45,3 +45,6 @@ application-local.yaml
 
 ### local docs (not committed) ###
 docs/
+
+### uploaded images (local file storage, not committed) ###
+uploads/
