@@ -10,6 +10,7 @@ import com.dslion.netflix_clone.genre.repository.GenreRepository;
 import com.dslion.netflix_clone.global.exception.DuplicateGenreNameException;
 import com.dslion.netflix_clone.global.exception.GenreNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,8 +32,13 @@ public class GenreService {
         }
 
         Genre genre = new Genre(request.getName());
-        Genre saved = genreRepository.save(genre);
-        return GenreResponse.from(saved);
+        try {
+            Genre saved = genreRepository.save(genre);
+            return GenreResponse.from(saved);
+        } catch (DataIntegrityViolationException e) {
+            // existsByName 통과 직후, 거의 동시에 같은 이름으로 등록된 경우 (DB unique 제약조건이 막아줌)
+            throw new DuplicateGenreNameException();
+        }
     }
 
     // 장르 전체 목록 조회
