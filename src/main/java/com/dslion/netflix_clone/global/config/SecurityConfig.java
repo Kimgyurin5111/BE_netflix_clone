@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         // Swagger UI 문서 페이지도 로그인 없이 접근 가능
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // 업로드된 포스터 이미지는 누구나(로그인 안 해도) 볼 수 있어야 함
+                        .requestMatchers("/images/**").permitAll()
                         // 콘텐츠 등록/수정/삭제는 관리자만 가능, 조회(GET)는 로그인한 누구나 가능
                         // "/api/contents"(정확히 이 경로)와 "/api/contents/**"(뒤에 id가 붙는 경로)를 둘 다 걸어야
                         // 등록(POST /api/contents)까지 빠짐없이 막힌다
@@ -53,6 +55,9 @@ public class SecurityConfig {
                         // 장르 등록도 관리자만 가능, 조회(GET)는 로그인한 누구나 가능
                         // 위와 마찬가지로 "/api/genres"(정확히 이 경로)까지 같이 걸어야 등록이 빠짐없이 막힌다
                         .requestMatchers(HttpMethod.POST, "/api/genres", "/api/genres/**").hasRole("ADMIN")
+                        // 이미지 업로드도 관리자만 가능 (콘텐츠 등록할 때 쓰는 용도라서)
+                        .requestMatchers(HttpMethod.POST, "/api/images", "/api/images/**").hasRole("ADMIN")
+                        // 찜(마이리스트) API는 SecurityConfig에서 따로 막을 필요 없음 -> anyRequest().authenticated()로 로그인만 하면 누구나 가능
                         // 그 외 관리자 전용 API가 생기면 여기로
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 그 외 요청은 로그인(토큰)이 있어야 접근 가능
