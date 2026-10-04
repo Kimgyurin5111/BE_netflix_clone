@@ -3,6 +3,8 @@ package com.dslion.netflix_clone.global.config;
 import com.dslion.netflix_clone.auth.jwt.JwtAuthenticationFilter;
 import com.dslion.netflix_clone.auth.jwt.JwtTokenProvider;
 import com.dslion.netflix_clone.auth.userdetails.CustomUserDetailsService;
+import com.dslion.netflix_clone.global.exception.RestAccessDeniedHandler;
+import com.dslion.netflix_clone.global.exception.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,11 +59,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/genres", "/api/genres/**").hasRole("ADMIN")
                         // 이미지 업로드도 관리자만 가능 (콘텐츠 등록할 때 쓰는 용도라서)
                         .requestMatchers(HttpMethod.POST, "/api/images", "/api/images/**").hasRole("ADMIN")
-                        // 찜(마이리스트) API는 SecurityConfig에서 따로 막을 필요 없음 -> anyRequest().authenticated()로 로그인만 하면 누구나 가능
+                        // 찜(마이리스트), 시청 기록 API는 SecurityConfig에서 따로 막을 필요 없음
+                        // -> anyRequest().authenticated()로 로그인만 하면 누구나 가능
                         // 그 외 관리자 전용 API가 생기면 여기로
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // 그 외 요청은 로그인(토큰)이 있어야 접근 가능
                         .anyRequest().authenticated()
+                )
+                // 인증/권한 에러도 공통 에러 형식(JSON)으로 응답
+                // - 토큰 없음/유효하지 않음 -> 401, 로그인은 했지만 권한 없음 -> 403
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                        .accessDeniedHandler(new RestAccessDeniedHandler())
                 )
                 // 매 요청마다 JWT를 확인하는 필터를 Security 기본 필터보다 먼저 실행
                 .addFilterBefore(
