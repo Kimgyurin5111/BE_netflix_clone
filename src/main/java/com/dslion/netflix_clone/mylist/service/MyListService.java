@@ -11,6 +11,7 @@ import com.dslion.netflix_clone.mylist.repository.MyListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 // 찜(마이리스트) 등록/삭제/조회의 실제 처리 로직
@@ -46,13 +47,16 @@ public class MyListService {
     // 내 마이리스트 조회 (찜해둔 콘텐츠 목록)
     public List<ContentResponse> findMyList(Long userId) {
         List<MyList> myLists = myListRepository.findByUserId(userId);
+        List<ContentResponse> result = new ArrayList<>();
 
-        return myLists.stream()
-                .map(myList -> {
-                    Content content = contentRepository.findById(myList.getContentId())
-                            .orElseThrow(ContentNotFoundException::new);
-                    return ContentResponse.from(content);
-                })
-                .toList();
+        for (MyList myList : myLists) {
+            Content content = contentRepository.findById(myList.getContentId()).orElse(null);
+            // 관리자가 이미 삭제한 콘텐츠는 목록에서 건너뛴다
+            // (예전에는 예외를 던졌는데, 그러면 콘텐츠 하나만 지워져도 마이리스트 전체 조회가 실패했음)
+            if (content != null) {
+                result.add(ContentResponse.from(content));
+            }
+        }
+        return result;
     }
 }
